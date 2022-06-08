@@ -26,16 +26,17 @@ const context = {
 }
 
 console.clear()
-process.stdout.write(`Welcome to the File Manager, ${context.userName}!\n`)
-console.log(`Current working directory: ${context.currentFolder}`)
+console.log(
+  `Welcome to the File Manager, ${context.userName}!
+   Current directory: ${context.currentFolder}`
+)
 
 process.stdin.on('data', async (data) => {
   await requestProcessing(data)
-  console.log(`\nCurrent working directory: ${context.currentFolder}`)
+  console.log(`\nCurrent directory: ${context.currentFolder}`)
 });
 
 process.on('SIGINT', async () => {
-  console.log('\n')
   await exit(context)
 })
 

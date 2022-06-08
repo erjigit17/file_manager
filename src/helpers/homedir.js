@@ -1,3 +1,6 @@
+import os from 'os';
+
 export function getHomedir(){
-  return process.env.HOME || process.env.USERPROFILE;
+  return os.homedir()
+  // return process.env.HOME || process.env.USERPROFILE;
 }
