@@ -1,5 +1,4 @@
-import { getIsDir } from "./getIsDir.js";
-import { up } from "./up.js";
+import { up, getIsDir, getAdsPath} from "./index.js";
 
 export async function cd(context, pathToDirectory){
   if (pathToDirectory === '..') {
@@ -11,10 +10,10 @@ export async function cd(context, pathToDirectory){
     return
   }
 
-
-  const isDir = await getIsDir(pathToDirectory)
+  const path = getAdsPath(context,pathToDirectory)
+  const isDir = await getIsDir(path)
   if (isDir === true) {
-    context.currentFolder = pathToDirectory
+    context.currentFolder = path
   } else if (isDir === false) {
     console.error(`Operation failed. Path to file`)
   }
