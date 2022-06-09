@@ -9,6 +9,7 @@ import {
   cp,
   mv,
   rm,
+  os
 } from './helpers/index.js'
 
 export const commands = new Map()
@@ -23,6 +24,7 @@ commands.set('rn',    {function: rn,   requireArgs: ['pathToFile', 'pathToNewFil
 commands.set('cp',    {function: cp,   requireArgs: ['pathToFile', 'pathToDirectory']})
 commands.set('mv',    {function: mv,   requireArgs: ['pathToFile', 'pathToDirectory']})
 commands.set('rm',    {function: rm,   requireArgs: ['pathToFile']})
+commands.set('os',    {function: os,   requireArgs: ['param']})
 
 
 export async function processor(command, context, arg1, arg2) {
