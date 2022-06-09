@@ -28,7 +28,7 @@ const context = {
 console.clear()
 console.log(
   `Welcome to the File Manager, ${context.userName}!
-   Current directory: ${context.currentFolder}`
+Current directory: ${context.currentFolder}`
 )
 
 process.stdin.on('data', async (data) => {
@@ -55,4 +55,4 @@ async function requestProcessing(chunk)  {
   } else {
     console.error(`Invalid input`)
   }
-};
+}
