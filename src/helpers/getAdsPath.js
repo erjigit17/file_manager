@@ -1,9 +1,13 @@
-import {join} from "path";
+import { isAbsolute, join } from "path";
 
+/**
+ * @param {!object} context
+ * @param {!string} path
+ * @namespace getAdsPath
+ * @return {string}
+ */
 export function getAdsPath(context, path) {
-  const rootDir = context.homedir.split('/')
-  const pathArr = path.split('/')
-  return rootDir[0] === pathArr[0]
-                              ? path
-                              : join(context.currentFolder, path)
+  return isAbsolute(path)
+    ? path
+    : join(context.currentFolder, path)
 }

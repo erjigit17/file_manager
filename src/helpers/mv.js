@@ -1,32 +1,20 @@
-import {copyFile, rm} from "fs/promises";
+import { copyFile, rm } from "fs/promises";
 import path from "path";
-import {getAdsPath} from "./getAdsPath.js";
-import {getIsDir} from "./getIsDir.js";
+import { getAdsPath, getIsDir } from "./index.js";
 
 export async function mv(context, pathToFile, pathToDirectory) {
   const source = getAdsPath(context, pathToFile)
-  const fileName = pathToFile.split('/').at(-1)
-  const _destination = path.join(pathToDirectory, fileName)
-  const destination = getAdsPath(context, _destination)
+  const isSourceDir = await getIsDir( source)
+  if (isSourceDir) throw new Error('You cannot move a directory.')
 
-  const isSourceDir = await getIsDir(context, source)
+  const destinationPath = getAdsPath(context, pathToDirectory)
+  const isDestinationDir = await getIsDir( destinationPath)
+  if (!isDestinationDir) throw new Error('Destination is not a directory.')
 
-  if (isSourceDir) {
-    console.error('You cannot move a directory.')
-    return
-  }
+  const fileName = pathToFile.split(path.sep).at(-1)
+  const destination = getAdsPath(context, path.join(destinationPath, fileName))
 
-  try {
-    await copyFile(source, destination)
-  } catch (err) {
-    console.error('Operation failed. ', err.message)
-    return
-  }
-
-  try {
-    await rm(source)
-  } catch(err) {
-    console.error('Operation failed. ', err.message)
-  }
+  await copyFile(source, destination)
+  await rm(source)
 
 }

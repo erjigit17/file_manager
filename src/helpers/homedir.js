@@ -1,6 +1,8 @@
 import os from 'os';
-
+/**
+ * @namespace getHomedir
+ * @return {string}
+ */
 export function getHomedir(){
   return os.homedir()
-  // return process.env.HOME || process.env.USERPROFILE;
 }

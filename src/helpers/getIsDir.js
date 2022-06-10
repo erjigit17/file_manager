@@ -1,15 +1,17 @@
-import {stat} from "fs/promises";
+import { stat } from "fs/promises";
+import { exists } from './index.js';
 
-export async function getIsDir (path) {
-  try {
-    const pathStat = await stat(path)
-    return pathStat.isDirectory()
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      console.error('Operation failed. Directory or file not exists.')
-    } else {
-      console.error('Operation failed. ', err.message)
-    }
-  }
+/**
+ * @param {!string} path
+ * @namespace getIsDir
+ * @return {!Promise<boolean>}
+ */
+export async function getIsDir (path){
+  const isExists = await exists(path)
+  if (!isExists) throw new Error('Operation failed. Directory or file not exists. ')
+
+  const pathStat = await stat(path)
+  return pathStat.isDirectory()
 }
+
 

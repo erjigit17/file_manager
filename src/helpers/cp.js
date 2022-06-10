@@ -1,25 +1,25 @@
-import {copyFile} from 'fs/promises';
+import { copyFile } from 'fs/promises';
 import path from 'path';
-import {getIsDir} from './getIsDir.js';
-import {getAdsPath} from './getAdsPath.js';
-
+import {getIsDir, getAdsPath, exists} from './index.js';
 
 export async function cp(context, pathToFile, pathToDirectory) {
+  // check source
   const source = getAdsPath(context, pathToFile)
-  const fileName = pathToFile.split('/').at(-1)
-  const _destination = path.join(pathToDirectory, fileName)
-  const destination = getAdsPath(context, _destination)
+  const isSourceDir = await getIsDir(source)
+  if (isSourceDir) throw new Error('You cannot copy a directory.')
 
-  const isSourceDir = await getIsDir(context, source)
+  // check destination
+  const _destination = getAdsPath(context, pathToDirectory)
+  const isDestinationExists = await exists(_destination)
+  if (!isDestinationExists) throw new Error('Destination folder does not exist.')
+  const isDestinationDir = await getIsDir(_destination)
+  if (!isDestinationDir) throw new Error('You cannot copy a directory.')
 
-  if (isSourceDir) {
-    console.error('You cannot copy a directory.')
-    return
-  }
+  // check output
+  const fileName = pathToFile.split(path.sep).at(-1)
+  const destination = path.join(_destination, fileName)
+  const isOutputFileExists = await exists(destination)
+  if (isOutputFileExists) throw new Error('File with this name already exists.')
 
-  try {
-    await copyFile(source, destination)
-  } catch (err) {
-    console.error('Operation failed. ', err.message)
-  }
+  await copyFile(source, destination)
 }

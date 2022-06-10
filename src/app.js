@@ -1,10 +1,16 @@
-import {getHomedir} from './helpers/index.js'
 import {processor, commands} from './processor.js'
-import {exit} from './helpers/index.js'
+import { getHomedir, exit } from './helpers/index.js'
 
-const userName = process.argv //todo need check
+
+let userName = process.argv
   .slice(3)[0]
-  .replace('--username=', '')
+
+if (!userName || !userName.startsWith('--username=')) {
+  console.error('\x1b[31m Please provide a username. Example: "node ./src/app -- --username=yourName"\x1b[0m')
+  process.exit(1)
+}
+userName = userName.replace('--username=', '')
+
 
 const homedir = getHomedir()
 const context = {
@@ -27,13 +33,13 @@ const context = {
 
 console.clear()
 console.log(
-  `Welcome to the File Manager, ${context.userName}!
-Current directory: ${context.currentFolder}`
+  `\x1b[36mWelcome to the File Manager, ${context.userName}!
+You are currently in: ${context.currentFolder}\x1b[0m`
 )
 
 process.stdin.on('data', async (data) => {
   await requestProcessing(data)
-  console.log(`\nCurrent directory: ${context.currentFolder}`)
+  console.log(`\x1b[36mYou are currently in: ${context.currentFolder}\x1b[0m`)
 });
 
 process.on('SIGINT', async () => {
@@ -50,9 +56,12 @@ async function requestProcessing(chunk)  {
   const [command, arg1, arg2, ..._] = input
 
   if (commands.has(command)) {
-    //todo need check args
-    await processor(command, context, arg1, arg2 )
+    try {
+      await processor(command, context, arg1, arg2)
+    } catch (e) {
+      console.error(`\x1b[31mOperation failed: ${e.message}\x1b[0m`)
+    }
   } else {
-    console.error(`Invalid input`)
+    console.error(`\x1b[33mInvalid input\x1b[0m`)
   }
 }
