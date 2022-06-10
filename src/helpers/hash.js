@@ -1,16 +1,23 @@
-import  crypto  from 'crypto'
-import { readFile } from 'fs/promises';
-import { getAdsPath, getIsDir } from "./index.js";
+import { createReadStream } from "fs"
+import  crypto  from "crypto"
+import { getAdsPath } from "./index.js"
 
+export async function hash(context, pathToFile){
+  const path = getAdsPath(context,pathToFile)
 
-export async function hash(context, pathToFile) {
-  const path = getAdsPath(context, pathToFile)
-  const isFileDir = await getIsDir(path)
-  if (isFileDir) throw new Error('Operation failed. You cannot get hash from directory.')
+  const hashPromise = new Promise(((resolve, reject) => {
+    const hash = crypto
+                          .createHash('sha256')
+                          .setEncoding('hex')
 
-  const data = await readFile(path);
-  const hashSum = crypto.createHash('sha256')
-  hashSum.update(data)
-  const hex = hashSum.digest('hex')
-  console.log(hex)
+    createReadStream(path)
+                          .once('error', reject)
+                          .pipe(hash)
+                          .once('finish',  () => {
+                            resolve(hash.read());
+                          })
+  }))
+
+  const result = await hashPromise
+  console.log(result)
 }

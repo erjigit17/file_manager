@@ -1,11 +1,21 @@
-import { readFile } from 'fs/promises';
+import { createReadStream } from 'fs';
 import { getAdsPath, getIsDir } from './index.js';
 
 export async function cat(context, pathToFile) {
-  const file = getAdsPath(context, pathToFile)
-  const isDir = await getIsDir(file)
-  if (isDir) throw new Error(`Operation failed. Cannot read folder.`);
+  const filePath = getAdsPath(context, pathToFile)
+  const isDir = await getIsDir(filePath)
+  if (isDir) throw new Error(`Operation failed. Cannot read folder.`)
 
-  const content = await readFile(file, "utf8" );
-  console.log(content)
+  const readPromise = new Promise((resolve, reject) => {
+    createReadStream(filePath)
+      .once('error', reject)
+      .on('data', (chunk) => {
+        console.log(chunk.toString());
+      })
+      .once('end',  ()=> {
+        resolve();
+      })
+  })
+
+  await readPromise
 }

@@ -1,4 +1,4 @@
-import { copyFile } from 'fs/promises';
+import { createReadStream, createWriteStream} from 'fs';
 import path from 'path';
 import {getIsDir, getAdsPath, exists} from './index.js';
 
@@ -21,5 +21,7 @@ export async function cp(context, pathToFile, pathToDirectory) {
   const isOutputFileExists = await exists(destination)
   if (isOutputFileExists) throw new Error('File with this name already exists.')
 
-  await copyFile(source, destination)
+  const inputStream = createReadStream(source)
+  const outputStream = createWriteStream(destination)
+  inputStream.pipe(outputStream)
 }

@@ -32,7 +32,7 @@ no comments
 ### os
 `os --EOL`, `os --cpus`, `os --homedir`, `os --username` or `os --architecture`
 ### hash
-`hash path_to_file`
+`hash path_to_file` Big file will be take time to calculate hash!
 ### compress
 `compress test.txt` compress same directory ->` test.txt.br `<br>
 `compress test.txt someFolder`compress to someFolder -> `someFolder/test.txt.br`

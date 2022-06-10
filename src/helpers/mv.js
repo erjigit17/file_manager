@@ -1,20 +1,33 @@
-import { copyFile, rm } from "fs/promises";
+import {createReadStream, createWriteStream} from "fs";
+import { rm } from "fs/promises";
 import path from "path";
-import { getAdsPath, getIsDir } from "./index.js";
+import {exists, getAdsPath, getIsDir} from "./index.js";
 
 export async function mv(context, pathToFile, pathToDirectory) {
+  // check source
   const source = getAdsPath(context, pathToFile)
-  const isSourceDir = await getIsDir( source)
-  if (isSourceDir) throw new Error('You cannot move a directory.')
+  const isSourceDir = await getIsDir(source)
+  if (isSourceDir) throw new Error('You cannot copy a directory.')
 
-  const destinationPath = getAdsPath(context, pathToDirectory)
-  const isDestinationDir = await getIsDir( destinationPath)
-  if (!isDestinationDir) throw new Error('Destination is not a directory.')
+  // check destination
+  const _destination = getAdsPath(context, pathToDirectory)
+  const isDestinationExists = await exists(_destination)
+  if (!isDestinationExists) throw new Error('Destination folder does not exist.')
+  const isDestinationDir = await getIsDir(_destination)
+  if (!isDestinationDir) throw new Error('You cannot copy a directory.')
 
+  // check output
   const fileName = pathToFile.split(path.sep).at(-1)
-  const destination = getAdsPath(context, path.join(destinationPath, fileName))
+  const destination = path.join(_destination, fileName)
+  const isOutputFileExists = await exists(destination)
+  if (isOutputFileExists) throw new Error('File with this name already exists.')
 
-  await copyFile(source, destination)
+  // copy file
+  const inputStream = createReadStream(source)
+  const outputStream = createWriteStream(destination)
+  inputStream.pipe(outputStream)
+
+  // delete original file
   await rm(source)
 
 }
