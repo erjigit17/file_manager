@@ -1,0 +1,13 @@
+{
+  "name": "rs_app_file_manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./src/app -- --username=User"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
